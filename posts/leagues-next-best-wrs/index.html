@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Emme Pruitt">
-<meta name="dcterms.date" content="2022-05-11">
+<meta name="dcterms.date" content="2023-05-11">
 
 <title>ClassBlog - Drafting for Success: The Top 5 WR Rookies to Draft in Fantasy Football</title>
 <style>
@@ -189,7 +189,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 11, 2022</p>
+        <p class="date">May 11, 2023</p>
       </div>
     </div>
       
@@ -219,138 +219,94 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bonsai)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>wrstats <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"wrdraftedstatswithratingsfixed.csv"</span>) </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>currentwrstats <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mattwaite.github.io/sportsdatafiles/currentwrstats.csv"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>wrstats <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"wrdraftedstatswithratingsfixed.csv"</span>) </span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>wrselected <span class="ot">&lt;-</span> wrstats <span class="sc">%&gt;%</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    year,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    college_team,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    nfl_team,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    overall,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    total_yards,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    total_ypr,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    total_receptions,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    total_touchdowns,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    rating,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    pick,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    FantPt</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>()</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>player_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(wrselected, <span class="at">prop =</span> .<span class="dv">8</span>)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>player_train <span class="ot">&lt;-</span> <span class="fu">training</span>(player_split)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>player_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(player_split)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>player_recipe <span class="ot">&lt;-</span> </span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">recipe</span>(FantPt <span class="sc">~</span> ., <span class="at">data =</span> player_train) <span class="sc">%&gt;%</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_role</span>(name, year, college_team, nfl_team, <span class="at">new_role =</span> <span class="st">"ID"</span>)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(player_recipe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 12 × 4
-   variable         type      role      source  
-   &lt;chr&gt;            &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   
- 1 name             &lt;chr [3]&gt; ID        original
- 2 year             &lt;chr [2]&gt; ID        original
- 3 college_team     &lt;chr [3]&gt; ID        original
- 4 nfl_team         &lt;chr [3]&gt; ID        original
- 5 overall          &lt;chr [2]&gt; predictor original
- 6 total_yards      &lt;chr [2]&gt; predictor original
- 7 total_ypr        &lt;chr [2]&gt; predictor original
- 8 total_receptions &lt;chr [2]&gt; predictor original
- 9 total_touchdowns &lt;chr [2]&gt; predictor original
-10 rating           &lt;chr [2]&gt; predictor original
-11 pick             &lt;chr [2]&gt; predictor original
-12 FantPt           &lt;chr [2]&gt; outcome   original</code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lightgbm_mod <span class="ot">&lt;-</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">boost_tree</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lightgbm"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="at">mode =</span> <span class="st">"regression"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>lightgbm_workflow <span class="ot">&lt;-</span> </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lightgbm_mod) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(player_recipe)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>lightgbm_fit <span class="ot">&lt;-</span> </span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  lightgbm_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> player_train)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>lightgbmpredict <span class="ot">&lt;-</span> </span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> player_train) <span class="sc">%&gt;%</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(player_train) </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lightgbmpredict, FantPt, .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  .metric .estimator .estimate
-  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 rmse    standard      22.1  
-2 rsq     standard       0.805
-3 mae     standard      16.5  </code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lightgbmpredict <span class="ot">&lt;-</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> player_test) <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(player_test) </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lightgbmpredict, FantPt, .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  .metric .estimator .estimate
-  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 rmse    standard      43.3  
-2 rsq     standard       0.396
-3 mae     standard      30.9  </code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>currentwrselected <span class="ot">&lt;-</span> currentwrstats <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    year,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    college_team,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    nfl_team,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    overall,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    total_yards,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    total_ypr,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    total_receptions,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    total_touchdowns,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    rating,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    pick</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>()</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="ot">&lt;-</span> </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> currentwrselected) <span class="sc">%&gt;%</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(currentwrselected) </span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="sc">%&gt;%</span> </span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, <span class="at">wt=</span>.pred) <span class="sc">%&gt;%</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(name, nfl_team, overall, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(.pred)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>currentwrstats <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mattwaite.github.io/sportsdatafiles/currentwrstats.csv"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>wrselected <span class="ot">&lt;-</span> wrstats <span class="sc">%&gt;%</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    year,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    college_team,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    nfl_team,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    overall,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    total_yards,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    total_ypr,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    total_receptions,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    total_touchdowns,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    rating,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    pick,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    FantPt</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>()</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>player_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(wrselected, <span class="at">prop =</span> .<span class="dv">8</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>player_train <span class="ot">&lt;-</span> <span class="fu">training</span>(player_split)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>player_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(player_split)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>player_recipe <span class="ot">&lt;-</span> </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">recipe</span>(FantPt <span class="sc">~</span> ., <span class="at">data =</span> player_train) <span class="sc">%&gt;%</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_role</span>(name, year, college_team, nfl_team, <span class="at">new_role =</span> <span class="st">"ID"</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>lightgbm_mod <span class="ot">&lt;-</span> </span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">boost_tree</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lightgbm"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="at">mode =</span> <span class="st">"regression"</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>lightgbm_workflow <span class="ot">&lt;-</span> </span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lightgbm_mod) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(player_recipe)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>lightgbm_fit <span class="ot">&lt;-</span> </span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  lightgbm_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> player_train)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>lightgbmpredict <span class="ot">&lt;-</span> </span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> player_train) <span class="sc">%&gt;%</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(player_train) </span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>lightgbmpredict <span class="ot">&lt;-</span> </span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> player_test) <span class="sc">%&gt;%</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(player_test) </span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>currentwrselected <span class="ot">&lt;-</span> currentwrstats <span class="sc">%&gt;%</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    year,</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    college_team,</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    nfl_team,</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    overall,</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>    total_yards,</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    total_ypr,</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    total_receptions,</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    total_touchdowns,</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    rating,</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    pick</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>()</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="ot">&lt;-</span> </span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>  lightgbm_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(<span class="at">new_data =</span> currentwrselected) <span class="sc">%&gt;%</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(currentwrselected) </span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="sc">%&gt;%</span> </span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, <span class="at">wt=</span>.pred) <span class="sc">%&gt;%</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(name, nfl_team, overall, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(.pred)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 
-<div id="vqbhxvtzbv" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="kpfghdkoqk" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#vqbhxvtzbv) .gt_table {
+:where(#kpfghdkoqk) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -375,7 +331,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-left-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_heading {
+:where(#kpfghdkoqk) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -387,7 +343,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_title {
+:where(#kpfghdkoqk) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -399,7 +355,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-width: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_subtitle {
+:where(#kpfghdkoqk) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -411,13 +367,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-width: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_bottom_border {
+:where(#kpfghdkoqk) .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_col_headings {
+:where(#kpfghdkoqk) .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -432,7 +388,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_col_heading {
+:where(#kpfghdkoqk) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -452,7 +408,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-:where(#vqbhxvtzbv) .gt_column_spanner_outer {
+:where(#kpfghdkoqk) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -464,15 +420,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 4px;
 }
 
-:where(#vqbhxvtzbv) .gt_column_spanner_outer:first-child {
+:where(#kpfghdkoqk) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_column_spanner_outer:last-child {
+:where(#kpfghdkoqk) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_column_spanner {
+:where(#kpfghdkoqk) .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -484,7 +440,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   width: 100%;
 }
 
-:where(#vqbhxvtzbv) .gt_group_heading {
+:where(#kpfghdkoqk) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -509,7 +465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-:where(#vqbhxvtzbv) .gt_empty_group_heading {
+:where(#kpfghdkoqk) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -524,15 +480,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-:where(#vqbhxvtzbv) .gt_from_md > :first-child {
+:where(#kpfghdkoqk) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_from_md > :last-child {
+:where(#kpfghdkoqk) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_row {
+:where(#kpfghdkoqk) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -551,7 +507,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-:where(#vqbhxvtzbv) .gt_stub {
+:where(#kpfghdkoqk) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -564,7 +520,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_stub_row_group {
+:where(#kpfghdkoqk) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -578,11 +534,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: top;
 }
 
-:where(#vqbhxvtzbv) .gt_row_group_first td {
+:where(#kpfghdkoqk) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#vqbhxvtzbv) .gt_summary_row {
+:where(#kpfghdkoqk) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -592,16 +548,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_first_summary_row {
+:where(#kpfghdkoqk) .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_first_summary_row.thick {
+:where(#kpfghdkoqk) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#vqbhxvtzbv) .gt_last_summary_row {
+:where(#kpfghdkoqk) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -611,7 +567,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_grand_summary_row {
+:where(#kpfghdkoqk) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -621,7 +577,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_first_grand_summary_row {
+:where(#kpfghdkoqk) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -631,11 +587,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_striped {
+:where(#kpfghdkoqk) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#vqbhxvtzbv) .gt_table_body {
+:where(#kpfghdkoqk) .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -644,7 +600,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_footnotes {
+:where(#kpfghdkoqk) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -658,7 +614,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_footnote {
+:where(#kpfghdkoqk) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -667,7 +623,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_sourcenotes {
+:where(#kpfghdkoqk) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -681,7 +637,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#vqbhxvtzbv) .gt_sourcenote {
+:where(#kpfghdkoqk) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -689,64 +645,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_left {
+:where(#kpfghdkoqk) .gt_left {
   text-align: left;
 }
 
-:where(#vqbhxvtzbv) .gt_center {
+:where(#kpfghdkoqk) .gt_center {
   text-align: center;
 }
 
-:where(#vqbhxvtzbv) .gt_right {
+:where(#kpfghdkoqk) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#vqbhxvtzbv) .gt_font_normal {
+:where(#kpfghdkoqk) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#vqbhxvtzbv) .gt_font_bold {
+:where(#kpfghdkoqk) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#vqbhxvtzbv) .gt_font_italic {
+:where(#kpfghdkoqk) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#vqbhxvtzbv) .gt_super {
+:where(#kpfghdkoqk) .gt_super {
   font-size: 65%;
 }
 
-:where(#vqbhxvtzbv) .gt_footnote_marks {
+:where(#kpfghdkoqk) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#vqbhxvtzbv) .gt_asterisk {
+:where(#kpfghdkoqk) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#vqbhxvtzbv) .gt_indent_1 {
+:where(#kpfghdkoqk) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#vqbhxvtzbv) .gt_indent_2 {
+:where(#kpfghdkoqk) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#vqbhxvtzbv) .gt_indent_3 {
+:where(#kpfghdkoqk) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#vqbhxvtzbv) .gt_indent_4 {
+:where(#kpfghdkoqk) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#vqbhxvtzbv) .gt_indent_5 {
+:where(#kpfghdkoqk) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -764,23 +720,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <tr><td class="gt_row gt_left">Jordan Addison</td>
 <td class="gt_row gt_left">Minnesota</td>
 <td class="gt_row gt_right">23</td>
-<td class="gt_row gt_right">117.41533</td></tr>
+<td class="gt_row gt_right">115.30530</td></tr>
     <tr><td class="gt_row gt_left">Quentin Johnston</td>
 <td class="gt_row gt_left">Los Angeles</td>
 <td class="gt_row gt_right">21</td>
-<td class="gt_row gt_right">104.18923</td></tr>
+<td class="gt_row gt_right">114.35197</td></tr>
     <tr><td class="gt_row gt_left">Jaxon Smith-Njigba</td>
 <td class="gt_row gt_left">Seattle</td>
 <td class="gt_row gt_right">20</td>
-<td class="gt_row gt_right">102.55710</td></tr>
+<td class="gt_row gt_right">109.45939</td></tr>
     <tr><td class="gt_row gt_left">Jalin Hyatt</td>
 <td class="gt_row gt_left">New York</td>
 <td class="gt_row gt_right">73</td>
-<td class="gt_row gt_right">89.54572</td></tr>
+<td class="gt_row gt_right">97.73736</td></tr>
     <tr><td class="gt_row gt_left">Jayden Reed</td>
 <td class="gt_row gt_left">Green Bay</td>
 <td class="gt_row gt_right">50</td>
-<td class="gt_row gt_right">79.14983</td></tr>
+<td class="gt_row gt_right">96.78611</td></tr>
   </tbody>
   
   
@@ -788,89 +744,83 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
-<section id="jayden-reed" class="level2">
-<h2 class="anchored" data-anchor-id="jayden-reed">1. Jayden Reed</h2>
-<p>My top pick from the 2023 WR rookie class is Jayden Reed. Reed, the 50th overall pick, selected by the Green Bay Packers, has a projected fantasy point total of 110.97.</p>
-<p>After spending one year with Western Michigan, Reed transferred to Michigan state and had a career 203 receptions, 27 touchdowns and averaged 14.1 yards per reception.</p>
-<p>Jayden Reed can be compared to Vikings player Adam Thielen, who in the 2022 NFL season produced 110 fantasy points. Thielen started in all 17 games he played in, and had 70 receptions for 716 yards.</p>
-<p>Reed will be an important play maker for Green Bay this upcoming season.</p>
-</section>
 <section id="jordan-addison" class="level2">
-<h2 class="anchored" data-anchor-id="jordan-addison">2. Jordan Addison</h2>
-<p>My second pick from the 2023 WR rookie class is Jordan Addison. Addison, the 23rd overall pick selected by the Minnesota Viking’s, has a projected fantasy point total of 108.82.</p>
+<h2 class="anchored" data-anchor-id="jordan-addison">1. Jordan Addison</h2>
+<p>My top pick from the 2023 WR rookie class is Jordan Addison. Addison, the 23rd overall pick selected by the Minnesota Viking’s, has a projected fantasy point total of 115.31.</p>
 <p>The former Pitt/USC player totaled 219 receptions, 30 touchdowns and averaged 14.3 yards per reception. Addison was the winner of the Fred Biletnikoff Award (Outstanding Receiver) in 2021.</p>
-<p>Matthew Stafford, who produced 108 fantasy points in the 2022 season, is who Jordan Addison can be compared to. Stafford, who started, and played in only 9 games last year, would have produced a lot more points if he would not have missed a majority of the season with various injuries.</p>
+<p>Allen Lazard, who produced 115 fantasy points in the 2022 season, is who Jordan Addison can be compared to. Lazard, who started in all 15 games he appeared in last year, averaged 13.3 yards per reception, and 6 touchdowns for the Green Bay Packers.</p>
 <p>Jordan Addison will be a great fit with the Viking’s offense next year, and make an immediate impact.</p>
+</section>
+<section id="quentin-johnston" class="level2">
+<h2 class="anchored" data-anchor-id="quentin-johnston">2. Quentin Johnston</h2>
+<p>My second pick from the 2023 WR rookie class is Quentin Johnston. Johnston, the 21st overall pick selected by the Chargers, has a projected fantasy point total of 114.36.</p>
+<p>Former TCU player totaled 115 receptions, 16 touchdowns, and averaged 19.0 yards per reception.</p>
+<p>Quentin Johnston is a big wide receiver, and is comparable to Mike Williams, receiver for the LA Chargers, who started in all 13 games he appeared in for the Chargers. Dotson produced 114 fantasy points last year in those 13 games.</p>
 </section>
 <section id="jaxon-smith-njigba" class="level2">
 <h2 class="anchored" data-anchor-id="jaxon-smith-njigba">3. Jaxon Smith-Njigba</h2>
-<p>My third pick from the 2023 WR rookie class is Jaxon Smith-Njigba (Ohio State). Smith-Njigba, the 20th overall pick, selected by the Seahawks, has a projected fantasy point total of 99.68.</p>
+<p>My third pick from the 2023 WR rookie class is Jaxon Smith-Njigba (Ohio State). Smith-Njigba, the 20th overall pick, selected by the Seahawks, has a projected fantasy point total of 109.46.</p>
 <p>The Buckeye was #1 in total receptions and receiving yards in the Big Ten in 2021. Smith-Njigba had 95 receptions, 9 touchdowns and averaged 16.9 yards per reception in the 2021 season.</p>
-<p>Keenan Allen, receiver for the LA Chargers produced 98 fantasy points last year. With Smith-Njigba predicted to have 99.68 points in the 2023 season, if he can stay healthy and play more than ten games unlike Keenan Allen, is is going to be a nightmare for defenses.</p>
+<p>Tyler Boyd, receiver for the Cincinnati Bengals produced 109 fantasy points last year. With Smith-Njigba predicted to have 109 points in the 2023 season,and being the first receiver to be selected in the draft, I would definitely keep him on my radar.</p>
 </section>
-<section id="quentin-johnston" class="level2">
-<h2 class="anchored" data-anchor-id="quentin-johnston">4. Quentin Johnston</h2>
-<p>My fourth pick from the 2023 WR rookie class is Quentin Johnston. Johnston, the 21st overall pick selected by the Chargers, has a projected fantasy point total of 96.5.</p>
-<p>Former TCU player totaled 115 receptions, 16 touchdowns, and averaged 19.0 yards per reception.</p>
-<p>Quentin Johnston is a big wide receiver, and is comparable to Jahan Dotson, receiver for Washington, who started in 10 games, and played in 12 for the Commanders. Dotson produced 96 fantasy points last year in those 12 games.</p>
+<section id="jalin-hyatt" class="level2">
+<h2 class="anchored" data-anchor-id="jalin-hyatt">4. Jalin Hyatt</h2>
+<p>My fourth pick from the 2023 WR rookie class is Jalin Hyatt. Hyatt, the 73rd overall pick selected by the Giants, has a projected fantasy point total of 97.74.</p>
+<p>The Tennessee Volunteer totaled 108 receptions, 19 touchdowns, and averaged 16.4 yards per reception in his career.</p>
+<p>Similar to Mack Hollins, LA Rams receiver, should produce 97 fantasy points for anyone’s team. Hyatt will be a reliable fantasy pick.</p>
 </section>
-<section id="cedric-tillman" class="level2">
-<h2 class="anchored" data-anchor-id="cedric-tillman">5. Cedric Tillman</h2>
-<p>To conclude my top 5 wide receiver rookie class, we have Cedric Tillman. Dell, the 74th overall pick selected by the Browns, has a projected fantasy point total of 88.51.</p>
-<p>The Tennessee Volunteer totaled 109 receptions, 17 touchdowns, and averaged 14.9 yards per reception in his career.</p>
-<p>Similar to DeAndre Hopkins, Arizona Cardinals receiver, should produce 88 fantasy points for anyone’s team. Tillman will be a reliable fantasy pick.</p>
+<section id="jayden-reed" class="level2">
+<h2 class="anchored" data-anchor-id="jayden-reed">5. Jayden Reed</h2>
+<p>To conclude my top 5 wide receiver rookie class, we have Jayden Reed. Reed, the 50th overall pick, selected by the Green Bay Packers, has a projected fantasy point total of 96.79.</p>
+<p>After spending one year with Western Michigan, Reed transferred to Michigan state and had a career 203 receptions, 27 touchdowns and averaged 14.1 yards per reception.</p>
+<p>Jayden Reed can be compared to Vikings player Jahan Dotson, who in the 2022 NFL season produced 96 fantasy points. Dotson started in 10 of 12 games last year, and averaged 14.94 yards per reception and one touchdown.</p>
+<p>Reed will be an important play maker for Green Bay this upcoming season.</p>
 <p>These five rookie receivers are going to have a breakout year in the 2023 NFL season. These five players have had impressive collegiate careers, and have been predicted to have even more successful NFL career’s. These five receivers all have the stats to prove them valuable to anyone’s fantasy team and should not be overlooked.</p>
 <p>The following table shows my top five rookies and their stats compared to one another.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, <span class="at">wt=</span>.pred) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(.pred)) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Name"</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="st">"Year"</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">college_team =</span> <span class="st">"College"</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfl_team =</span> <span class="st">"Drafted to:"</span>, </span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">overall =</span> <span class="st">"Overall"</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_yards =</span> <span class="st">"Total Yards"</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_ypr =</span> <span class="st">"Total Yards per Reception"</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_receptions =</span> <span class="st">"Total Receptions"</span>,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_touchdowns =</span> <span class="st">"Total Touchdowns"</span>,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">rating =</span> <span class="st">"Rating"</span>,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">pick =</span> <span class="st">"Pick"</span>,</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">.pred =</span> <span class="st">"Predicted Fantasy Points"</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"My Top 5 - With the Statistics."</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">tab_style</span>(</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">cell_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">weight =</span> <span class="st">"bold"</span>, <span class="at">align =</span> <span class="st">"left"</span>),</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_title</span>(<span class="st">"title"</span>)</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="fu">md</span>(<span class="st">"**By:** Emme Pruitt  |  **Source:** CFB reference"</span>)</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_style</span>(</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>     <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> <span class="fu">everything</span>()),</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>     <span class="at">style =</span> <span class="fu">list</span>(</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>       <span class="fu">cell_borders</span>(<span class="at">sides =</span> <span class="st">"bottom"</span>, <span class="at">weight =</span> <span class="fu">px</span>(<span class="dv">4</span>)),</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>       <span class="fu">cell_text</span>(<span class="at">weight =</span> <span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">12</span>)</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>     )</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>   ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_row_striping</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_table_lines</span>(<span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>currentlightgbmpredict <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(name, nfl_team, total_ypr, total_receptions, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, <span class="at">wt=</span>.pred) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(.pred)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Name"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfl_team =</span> <span class="st">"Drafted to:"</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_ypr =</span> <span class="st">"Total Yards per Reception"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_receptions =</span> <span class="st">"Total Receptions"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.pred =</span> <span class="st">"Predicted Fantasy Points"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"My Top 5 - With the Statistics."</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">tab_style</span>(</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">cell_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">weight =</span> <span class="st">"bold"</span>, <span class="at">align =</span> <span class="st">"left"</span>),</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> <span class="fu">cells_title</span>(<span class="st">"title"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="fu">md</span>(<span class="st">"**By:** Emme Pruitt  |  **Source:** CFB reference"</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_style</span>(</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>     <span class="at">locations =</span> <span class="fu">cells_column_labels</span>(<span class="at">columns =</span> <span class="fu">everything</span>()),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>     <span class="at">style =</span> <span class="fu">list</span>(</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>       <span class="fu">cell_borders</span>(<span class="at">sides =</span> <span class="st">"bottom"</span>, <span class="at">weight =</span> <span class="fu">px</span>(<span class="dv">4</span>)),</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>       <span class="fu">cell_text</span>(<span class="at">weight =</span> <span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">12</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>     )</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>   ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_row_striping</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_table_lines</span>(<span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 
-<div id="xtsxjloeru" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="gjxkczrkxa" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#xtsxjloeru) .gt_table {
+:where(#gjxkczrkxa) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -895,7 +845,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-left-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_heading {
+:where(#gjxkczrkxa) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -907,7 +857,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_title {
+:where(#gjxkczrkxa) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -919,7 +869,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-width: 0;
 }
 
-:where(#xtsxjloeru) .gt_subtitle {
+:where(#gjxkczrkxa) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -931,13 +881,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-width: 0;
 }
 
-:where(#xtsxjloeru) .gt_bottom_border {
+:where(#gjxkczrkxa) .gt_bottom_border {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_col_headings {
+:where(#gjxkczrkxa) .gt_col_headings {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -952,7 +902,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_col_heading {
+:where(#gjxkczrkxa) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -972,7 +922,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-:where(#xtsxjloeru) .gt_column_spanner_outer {
+:where(#gjxkczrkxa) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -984,15 +934,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 4px;
 }
 
-:where(#xtsxjloeru) .gt_column_spanner_outer:first-child {
+:where(#gjxkczrkxa) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#xtsxjloeru) .gt_column_spanner_outer:last-child {
+:where(#gjxkczrkxa) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#xtsxjloeru) .gt_column_spanner {
+:where(#gjxkczrkxa) .gt_column_spanner {
   border-bottom-style: none;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1004,7 +954,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   width: 100%;
 }
 
-:where(#xtsxjloeru) .gt_group_heading {
+:where(#gjxkczrkxa) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1029,7 +979,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-:where(#xtsxjloeru) .gt_empty_group_heading {
+:where(#gjxkczrkxa) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1044,15 +994,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-:where(#xtsxjloeru) .gt_from_md > :first-child {
+:where(#gjxkczrkxa) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#xtsxjloeru) .gt_from_md > :last-child {
+:where(#gjxkczrkxa) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#xtsxjloeru) .gt_row {
+:where(#gjxkczrkxa) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1071,7 +1021,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-:where(#xtsxjloeru) .gt_stub {
+:where(#gjxkczrkxa) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1084,7 +1034,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#xtsxjloeru) .gt_stub_row_group {
+:where(#gjxkczrkxa) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1098,11 +1048,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: top;
 }
 
-:where(#xtsxjloeru) .gt_row_group_first td {
+:where(#gjxkczrkxa) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#xtsxjloeru) .gt_summary_row {
+:where(#gjxkczrkxa) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1112,16 +1062,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#xtsxjloeru) .gt_first_summary_row {
+:where(#gjxkczrkxa) .gt_first_summary_row {
   border-top-style: none;
   border-top-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_first_summary_row.thick {
+:where(#gjxkczrkxa) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#xtsxjloeru) .gt_last_summary_row {
+:where(#gjxkczrkxa) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1131,7 +1081,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_grand_summary_row {
+:where(#gjxkczrkxa) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1141,7 +1091,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#xtsxjloeru) .gt_first_grand_summary_row {
+:where(#gjxkczrkxa) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1151,11 +1101,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_striped {
+:where(#gjxkczrkxa) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#xtsxjloeru) .gt_table_body {
+:where(#gjxkczrkxa) .gt_table_body {
   border-top-style: none;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1164,7 +1114,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_footnotes {
+:where(#gjxkczrkxa) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1178,7 +1128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_footnote {
+:where(#gjxkczrkxa) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -1187,7 +1137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#xtsxjloeru) .gt_sourcenotes {
+:where(#gjxkczrkxa) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1201,7 +1151,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-:where(#xtsxjloeru) .gt_sourcenote {
+:where(#gjxkczrkxa) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1209,155 +1159,113 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-:where(#xtsxjloeru) .gt_left {
+:where(#gjxkczrkxa) .gt_left {
   text-align: left;
 }
 
-:where(#xtsxjloeru) .gt_center {
+:where(#gjxkczrkxa) .gt_center {
   text-align: center;
 }
 
-:where(#xtsxjloeru) .gt_right {
+:where(#gjxkczrkxa) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#xtsxjloeru) .gt_font_normal {
+:where(#gjxkczrkxa) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#xtsxjloeru) .gt_font_bold {
+:where(#gjxkczrkxa) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#xtsxjloeru) .gt_font_italic {
+:where(#gjxkczrkxa) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#xtsxjloeru) .gt_super {
+:where(#gjxkczrkxa) .gt_super {
   font-size: 65%;
 }
 
-:where(#xtsxjloeru) .gt_footnote_marks {
+:where(#gjxkczrkxa) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#xtsxjloeru) .gt_asterisk {
+:where(#gjxkczrkxa) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#xtsxjloeru) .gt_indent_1 {
+:where(#gjxkczrkxa) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#xtsxjloeru) .gt_indent_2 {
+:where(#gjxkczrkxa) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#xtsxjloeru) .gt_indent_3 {
+:where(#gjxkczrkxa) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#xtsxjloeru) .gt_indent_4 {
+:where(#gjxkczrkxa) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#xtsxjloeru) .gt_indent_5 {
+:where(#gjxkczrkxa) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
 <table class="gt_table">
   <thead class="gt_header">
     <tr>
-      <td colspan="12" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="color: #000000; text-align: left; font-weight: bold;">My Top 5 - With the Statistics.</td>
+      <td colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="color: #000000; text-align: left; font-weight: bold;">My Top 5 - With the Statistics.</td>
     </tr>
     
   </thead>
   <thead class="gt_col_headings">
     <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Predicted Fantasy Points</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Name</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Year</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">College</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Drafted to:</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Overall</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Total Yards</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Total Yards per Reception</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Total Receptions</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Total Touchdowns</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Rating</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Pick</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-bottom-width: 4px; border-bottom-style: solid; border-bottom-color: #000000; font-size: 12; font-weight: bold;" scope="col">Predicted Fantasy Points</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td class="gt_row gt_right">117.41533</td>
-<td class="gt_row gt_left">Jordan Addison</td>
-<td class="gt_row gt_right">2023</td>
-<td class="gt_row gt_left">USC</td>
+    <tr><td class="gt_row gt_left">Jordan Addison</td>
 <td class="gt_row gt_left">Minnesota</td>
-<td class="gt_row gt_right">23</td>
-<td class="gt_row gt_right">3020</td>
 <td class="gt_row gt_right">14.24528</td>
 <td class="gt_row gt_right">212</td>
-<td class="gt_row gt_right">29</td>
-<td class="gt_row gt_right">18.9</td>
-<td class="gt_row gt_right">24</td></tr>
-    <tr><td class="gt_row gt_right gt_striped">104.18923</td>
-<td class="gt_row gt_left gt_striped">Quentin Johnston</td>
-<td class="gt_row gt_right gt_striped">2023</td>
-<td class="gt_row gt_left gt_striped">TCU</td>
+<td class="gt_row gt_right">115.30530</td></tr>
+    <tr><td class="gt_row gt_left gt_striped">Quentin Johnston</td>
 <td class="gt_row gt_left gt_striped">Los Angeles</td>
-<td class="gt_row gt_right gt_striped">21</td>
-<td class="gt_row gt_right gt_striped">2002</td>
 <td class="gt_row gt_right gt_striped">18.53704</td>
 <td class="gt_row gt_right gt_striped">108</td>
-<td class="gt_row gt_right gt_striped">13</td>
-<td class="gt_row gt_right gt_striped">24.3</td>
-<td class="gt_row gt_right gt_striped">22</td></tr>
-    <tr><td class="gt_row gt_right">102.55710</td>
-<td class="gt_row gt_left">Jaxon Smith-Njigba</td>
-<td class="gt_row gt_right">2023</td>
-<td class="gt_row gt_left">Ohio State</td>
+<td class="gt_row gt_right gt_striped">114.35197</td></tr>
+    <tr><td class="gt_row gt_left">Jaxon Smith-Njigba</td>
 <td class="gt_row gt_left">Seattle</td>
-<td class="gt_row gt_right">20</td>
-<td class="gt_row gt_right">1319</td>
 <td class="gt_row gt_right">14.49451</td>
 <td class="gt_row gt_right">91</td>
-<td class="gt_row gt_right">7</td>
-<td class="gt_row gt_right">31.1</td>
-<td class="gt_row gt_right">20</td></tr>
-    <tr><td class="gt_row gt_right gt_striped">89.54572</td>
-<td class="gt_row gt_left gt_striped">Jalin Hyatt</td>
-<td class="gt_row gt_right gt_striped">2023</td>
-<td class="gt_row gt_left gt_striped">Tennessee</td>
+<td class="gt_row gt_right">109.45939</td></tr>
+    <tr><td class="gt_row gt_left gt_striped">Jalin Hyatt</td>
 <td class="gt_row gt_left gt_striped">New York</td>
-<td class="gt_row gt_right gt_striped">73</td>
-<td class="gt_row gt_right gt_striped">1734</td>
 <td class="gt_row gt_right gt_striped">16.51429</td>
 <td class="gt_row gt_right gt_striped">105</td>
-<td class="gt_row gt_right gt_striped">18</td>
-<td class="gt_row gt_right gt_striped">25.2</td>
-<td class="gt_row gt_right gt_striped">10</td></tr>
-    <tr><td class="gt_row gt_right">79.14983</td>
-<td class="gt_row gt_left">Jayden Reed</td>
-<td class="gt_row gt_right">2023</td>
-<td class="gt_row gt_left">Michigan State</td>
+<td class="gt_row gt_right gt_striped">97.73736</td></tr>
+    <tr><td class="gt_row gt_left">Jayden Reed</td>
 <td class="gt_row gt_left">Green Bay</td>
-<td class="gt_row gt_right">50</td>
-<td class="gt_row gt_right">2781</td>
 <td class="gt_row gt_right">14.18878</td>
 <td class="gt_row gt_right">196</td>
-<td class="gt_row gt_right">24</td>
-<td class="gt_row gt_right">1.2</td>
-<td class="gt_row gt_right">19</td></tr>
+<td class="gt_row gt_right">96.78611</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
-      <td class="gt_sourcenote" colspan="12"><strong>By:</strong> Emme Pruitt  |  <strong>Source:</strong> CFB reference</td>
+      <td class="gt_sourcenote" colspan="5"><strong>By:</strong> Emme Pruitt  |  <strong>Source:</strong> CFB reference</td>
     </tr>
   </tfoot>
   
